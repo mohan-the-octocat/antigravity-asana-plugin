@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "asana": {
+      "command": "node",
+      "args": [
+        "dist/index.js"
+      ],
+      "env": {
+        "ASANA_ACCESS_TOKEN": "${ASANA_ACCESS_TOKEN}"
+      }
+    }
+  }
+}

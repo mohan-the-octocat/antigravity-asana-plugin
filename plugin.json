@@ -1,0 +1,11 @@
+{
+  "name": "asana",
+  "displayName": "Asana Plugin for Jetski & Antigravity",
+  "description": "Asana MCP server, task & project automation, and administration skills for CE workflows.",
+  "version": "1.0.0",
+  "capabilities": {
+    "rules": true,
+    "skills": true,
+    "mcp": true
+  }
+}
