@@ -3,11 +3,9 @@
     "asana": {
       "command": "node",
       "args": [
+        "--env-file=.env",
         "dist/index.js"
-      ],
-      "env": {
-        "ASANA_ACCESS_TOKEN": "${ASANA_ACCESS_TOKEN}"
-      }
+      ]
     }
   }
 }

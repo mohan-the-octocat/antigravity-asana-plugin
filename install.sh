@@ -94,22 +94,26 @@ echo "============================================================"
 echo "Building server..."
 (cd "${SCRIPT_DIR}" && npm install && npm run build)
 
-# 2. Generate scoped mcp_config.json
-echo "Configuring scoped mcp_config.json..."
+# 2. Generate local .env file
+echo "Configuring local .env file..."
+cat <<EOF > "${SCRIPT_DIR}/.env"
+# Local Asana Configuration (Git-ignored)
+ASANA_ACCESS_TOKEN="${ACCESS_TOKEN}"
+ASANA_WORKSPACE_GID="${WORKSPACE_GID}"
+ASANA_TEAM_GID="${TEAM_GID}"
+ASANA_STRICT_SCOPE="${STRICT_SCOPE}"
+EOF
+
+# Ensure mcp_config.json cleanly loads .env
 cat <<EOF > "${SCRIPT_DIR}/mcp_config.json"
 {
   "mcpServers": {
     "asana": {
       "command": "node",
       "args": [
+        "--env-file=.env",
         "dist/index.js"
-      ],
-      "env": {
-        "ASANA_ACCESS_TOKEN": "${ACCESS_TOKEN:-\${ASANA_ACCESS_TOKEN\}}",
-        "ASANA_WORKSPACE_GID": "${WORKSPACE_GID}",
-        "ASANA_TEAM_GID": "${TEAM_GID}",
-        "ASANA_STRICT_SCOPE": "${STRICT_SCOPE}"
-      }
+      ]
     }
   }
 }
