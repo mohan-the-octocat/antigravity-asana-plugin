@@ -12,11 +12,10 @@ Use this skill to autonomously navigate and execute user requests in Asana using
 
 ## Core Directives
 1. **Always Use Asana MCP Tools**: Always use the provided MCP tools (`get_workspaces`, `get_teams`, `get_projects`, `get_tasks`, `create_task`, `update_task`, etc.) to interact with Asana. Never ask the user to run external scripts or API calls.
-2. **Never Prompt the User for GIDs**: Users speak in human-friendly names (e.g. "Retail POC", "Customer Onboarding", "CE Practice"). Autonomously resolve names to GIDs using the tools.
-3. **Dynamic Hierarchy Resolution**:
-   - Call `get_workspaces` first to identify the active workspace GID.
-   - Call `get_teams` with `workspace_gid` to locate the target team.
-   - Call `get_projects` with `team_gid` or `workspace_gid` to locate the target project GID.
+2. **Never Prompt the User for GIDs**: The active Workspace and Team are pre-configured at install time in the environment (`ASANA_WORKSPACE_GID` and `ASANA_TEAM_GID`). When `workspace_gid` or `team_gid` are omitted, the MCP server automatically applies these defaults.
+3. **Hierarchy & Context**:
+   - The agent operates directly within the pinned workspace and team.
+   - You can jump straight to listing projects or templates without needing to discover or select a workspace/team.
    - Call `get_sections` with `project_gid` to inspect available sections (e.g., "Backlog", "In Progress", "Done").
 
 ---

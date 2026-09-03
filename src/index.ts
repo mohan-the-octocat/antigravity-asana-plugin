@@ -438,27 +438,48 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     if (name === "get_workspaces") {
       const workspaces = await workspacesApi.getWorkspaces({ limit: 100 });
+      let data = workspaces.data ?? [];
+      const scopedWorkspace = process.env.ASANA_WORKSPACE_GID;
+      if (scopedWorkspace && process.env.ASANA_STRICT_SCOPE === "true") {
+        data = data.filter((w: any) => String(w.gid) === String(scopedWorkspace));
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(workspaces.data, null, 2) }],
+        content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
       };
     } 
     
     else if (name === "get_teams") {
-      const workspace_gid = args?.workspace_gid ? String(args.workspace_gid) : undefined;
-      if (!workspace_gid) throw new Error("workspace_gid is required");
+      const workspace_gid = args?.workspace_gid ? String(args.workspace_gid) : process.env.ASANA_WORKSPACE_GID;
+      if (!workspace_gid) throw new Error("workspace_gid is required (or set ASANA_WORKSPACE_GID)");
+
+      if (process.env.ASANA_WORKSPACE_GID && process.env.ASANA_STRICT_SCOPE === "true" && String(workspace_gid) !== String(process.env.ASANA_WORKSPACE_GID)) {
+        throw new Error(`Scope violation: Workspace ${workspace_gid} is not allowed. Pinned workspace is ${process.env.ASANA_WORKSPACE_GID}`);
+      }
 
       const teams = await teamsApi.getTeamsForWorkspace(workspace_gid, { limit: 100 });
+      let data = teams.data ?? [];
+      const scopedTeam = process.env.ASANA_TEAM_GID;
+      if (scopedTeam && process.env.ASANA_STRICT_SCOPE === "true") {
+        data = data.filter((t: any) => String(t.gid) === String(scopedTeam));
+      }
       return {
-        content: [{ type: "text", text: JSON.stringify(teams.data, null, 2) }],
+        content: [{ type: "text", text: JSON.stringify(data, null, 2) }],
       };
     }
 
     else if (name === "get_projects") {
       const team_gid = args?.team_gid ? String(args.team_gid) : process.env.ASANA_TEAM_GID;
-      const workspace_gid = args?.workspace_gid ? String(args.workspace_gid) : undefined;
+      const workspace_gid = args?.workspace_gid ? String(args.workspace_gid) : process.env.ASANA_WORKSPACE_GID;
 
       if (!team_gid && !workspace_gid) {
-        throw new Error("Either team_gid or workspace_gid is required");
+        throw new Error("Either team_gid or workspace_gid is required (or set ASANA_TEAM_GID / ASANA_WORKSPACE_GID)");
+      }
+
+      if (process.env.ASANA_TEAM_GID && process.env.ASANA_STRICT_SCOPE === "true" && team_gid && String(team_gid) !== String(process.env.ASANA_TEAM_GID)) {
+        throw new Error(`Scope violation: Team ${team_gid} is not allowed. Pinned team is ${process.env.ASANA_TEAM_GID}`);
+      }
+      if (process.env.ASANA_WORKSPACE_GID && process.env.ASANA_STRICT_SCOPE === "true" && workspace_gid && String(workspace_gid) !== String(process.env.ASANA_WORKSPACE_GID)) {
+        throw new Error(`Scope violation: Workspace ${workspace_gid} is not allowed. Pinned workspace is ${process.env.ASANA_WORKSPACE_GID}`);
       }
 
       // Request rich fields so callers can understand team membership and archive status
@@ -523,7 +544,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     } 
     
     else if (name === "create_task") {
-      const workspace_gid = String(args?.workspace_gid);
+      const workspace_gid = args?.workspace_gid ? String(args.workspace_gid) : process.env.ASANA_WORKSPACE_GID;
       const taskName = String(args?.name);
       const notes = args?.notes ? String(args.notes) : undefined;
       const project_gid = args?.project_gid ? String(args.project_gid) : undefined;
@@ -532,7 +553,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const is_milestone = args?.is_milestone === true;
       const due_on = args?.due_on ? String(args.due_on) : undefined;
 
-      if (!workspace_gid || !taskName) throw new Error("workspace_gid and name are required");
+      if (!workspace_gid || !taskName) throw new Error("workspace_gid and name are required (or set ASANA_WORKSPACE_GID)");
+
+      if (process.env.ASANA_WORKSPACE_GID && process.env.ASANA_STRICT_SCOPE === "true" && String(workspace_gid) !== String(process.env.ASANA_WORKSPACE_GID)) {
+        throw new Error(`Scope violation: Workspace ${workspace_gid} is not allowed. Pinned workspace is ${process.env.ASANA_WORKSPACE_GID}`);
+      }
 
       const taskData: any = {
         workspace: workspace_gid,
@@ -597,7 +622,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     else if (name === "create_project") {
       const projectName = String(args?.name);
       const team_gid = args?.team_gid ? String(args.team_gid) : process.env.ASANA_TEAM_GID;
-      if (!projectName || !team_gid) throw new Error("name and team_gid are required");
+      if (!projectName || !team_gid) throw new Error("name and team_gid are required (or set ASANA_TEAM_GID)");
+
+      if (process.env.ASANA_TEAM_GID && process.env.ASANA_STRICT_SCOPE === "true" && String(team_gid) !== String(process.env.ASANA_TEAM_GID)) {
+        throw new Error(`Scope violation: Team ${team_gid} is not allowed. Pinned team is ${process.env.ASANA_TEAM_GID}`);
+      }
 
       const projectData: any = {
         name: projectName,
@@ -634,8 +663,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     else if (name === "get_custom_fields") {
-      const workspace_gid = String(args?.workspace_gid);
-      if (!workspace_gid) throw new Error("workspace_gid is required");
+      const workspace_gid = args?.workspace_gid ? String(args.workspace_gid) : process.env.ASANA_WORKSPACE_GID;
+      if (!workspace_gid) throw new Error("workspace_gid is required (or set ASANA_WORKSPACE_GID)");
+
+      if (process.env.ASANA_WORKSPACE_GID && process.env.ASANA_STRICT_SCOPE === "true" && String(workspace_gid) !== String(process.env.ASANA_WORKSPACE_GID)) {
+        throw new Error(`Scope violation: Workspace ${workspace_gid} is not allowed. Pinned workspace is ${process.env.ASANA_WORKSPACE_GID}`);
+      }
 
       const namePrefix = args?.name_prefix !== undefined
         ? String(args.name_prefix).toLowerCase()
@@ -668,11 +701,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     else if (name === "create_custom_field") {
-      const workspace_gid = String(args?.workspace_gid);
+      const workspace_gid = args?.workspace_gid ? String(args.workspace_gid) : process.env.ASANA_WORKSPACE_GID;
       const fieldName = String(args?.name);
       const field_type = String(args?.field_type);
       if (!workspace_gid || !fieldName || !field_type) {
-        throw new Error("workspace_gid, name, and field_type are required");
+        throw new Error("workspace_gid, name, and field_type are required (or set ASANA_WORKSPACE_GID)");
+      }
+
+      if (process.env.ASANA_WORKSPACE_GID && process.env.ASANA_STRICT_SCOPE === "true" && String(workspace_gid) !== String(process.env.ASANA_WORKSPACE_GID)) {
+        throw new Error(`Scope violation: Workspace ${workspace_gid} is not allowed. Pinned workspace is ${process.env.ASANA_WORKSPACE_GID}`);
       }
 
       // ── Idempotent guard: search all custom fields to avoid duplicates ──
@@ -761,7 +798,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     else if (name === "get_project_templates") {
       const team_gid = args?.team_gid ? String(args.team_gid) : process.env.ASANA_TEAM_GID;
-      if (!team_gid) throw new Error("team_gid is required");
+      if (!team_gid) throw new Error("team_gid is required (or set ASANA_TEAM_GID)");
+
+      if (process.env.ASANA_TEAM_GID && process.env.ASANA_STRICT_SCOPE === "true" && String(team_gid) !== String(process.env.ASANA_TEAM_GID)) {
+        throw new Error(`Scope violation: Team ${team_gid} is not allowed. Pinned team is ${process.env.ASANA_TEAM_GID}`);
+      }
 
       const templates = await projectTemplatesApi.getProjectTemplatesForTeam(team_gid, { limit: 100 });
       return {
@@ -774,7 +815,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const projectName = String(args?.name);
       const team_gid = args?.team_gid ? String(args.team_gid) : process.env.ASANA_TEAM_GID;
       if (!template_gid || !projectName || !team_gid) {
-        throw new Error("template_gid, name, and team_gid are required");
+        throw new Error("template_gid, name, and team_gid are required (or set ASANA_TEAM_GID)");
+      }
+
+      if (process.env.ASANA_TEAM_GID && process.env.ASANA_STRICT_SCOPE === "true" && String(team_gid) !== String(process.env.ASANA_TEAM_GID)) {
+        throw new Error(`Scope violation: Team ${team_gid} is not allowed. Pinned team is ${process.env.ASANA_TEAM_GID}`);
       }
       const isPublic = args?.public === true;
 
@@ -817,11 +862,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     else if (name === "scaffold_project_from_definition") {
-      const workspace_gid = String(args?.workspace_gid);
+      const workspace_gid = args?.workspace_gid ? String(args.workspace_gid) : process.env.ASANA_WORKSPACE_GID;
       const definition = args?.definition as any;
       const team_gid = args?.team_gid ? String(args.team_gid) : process.env.ASANA_TEAM_GID;
       if (!workspace_gid || !definition || !team_gid) {
-        throw new Error("workspace_gid, definition, and team_gid are required");
+        throw new Error("workspace_gid, definition, and team_gid are required (or set ASANA_WORKSPACE_GID / ASANA_TEAM_GID)");
+      }
+
+      if (process.env.ASANA_WORKSPACE_GID && process.env.ASANA_STRICT_SCOPE === "true" && String(workspace_gid) !== String(process.env.ASANA_WORKSPACE_GID)) {
+        throw new Error(`Scope violation: Workspace ${workspace_gid} is not allowed. Pinned workspace is ${process.env.ASANA_WORKSPACE_GID}`);
+      }
+      if (process.env.ASANA_TEAM_GID && process.env.ASANA_STRICT_SCOPE === "true" && String(team_gid) !== String(process.env.ASANA_TEAM_GID)) {
+        throw new Error(`Scope violation: Team ${team_gid} is not allowed. Pinned team is ${process.env.ASANA_TEAM_GID}`);
       }
       const summary: any = { sections: [] };
 

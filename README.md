@@ -71,49 +71,60 @@ The MCP server exposes 18 generic, un-scoped Asana tools:
 
 ---
 
-## Configuration & Authentication
+## Configuration & Scoping
 
-The MCP server requires an **Asana Personal Access Token**:
-1. Log into Asana → **My Settings** → **Apps** → **Manage Developer Apps** → **Personal Access Tokens**.
-2. Generate a new token.
-3. Export it in your shell environment or set it in your agent configuration:
-   ```bash
-   export ASANA_ACCESS_TOKEN="your_personal_access_token"
-   ```
-4. *(Optional)* Set a default team GID:
-   ```bash
-   export ASANA_TEAM_GID="1234567890"
-   ```
+This plugin is designed to operate within a specific **Asana Workspace** and **Team**.
+
+| Variable | Description |
+|---|---|
+| `ASANA_ACCESS_TOKEN` | Required. Your Asana Personal Access Token. |
+| `ASANA_WORKSPACE_GID`| Pinned Asana Workspace GID (e.g. `1213807836434812`). |
+| `ASANA_TEAM_GID` | Pinned Asana Team GID (e.g. `1213807836434813`). |
+| `ASANA_STRICT_SCOPE` | When `true`, enforces strict boundary protection (rejection of cross-workspace/team operations). |
 
 ---
 
-## Installation
+## Installation & Setup
 
-### Option 1: Global Installation (Antigravity & Jetski)
-Symlink this repository into your global agent plugins directory:
-
-```bash
-# For Antigravity:
-mkdir -p ~/.gemini/antigravity/plugins/
-ln -s ~/repos/Antigravity-Asana-Plugin ~/.gemini/antigravity/plugins/asana
-
-# For Jetski:
-mkdir -p ~/.gemini/config/plugins/
-ln -s ~/repos/Antigravity-Asana-Plugin ~/.gemini/config/plugins/asana
-```
-
-### Option 2: Workspace-Level Installation
-Symlink into your workspace's `.agents/plugins/` (Antigravity) or `_agents/plugins/` (Jetski):
+### Method 1: Automated Scoped Installer (Recommended)
+Use the included `install.sh` script to configure your pinned workspace and team, build the project, and symlink it to Antigravity and/or Jetski:
 
 ```bash
-# For Antigravity:
-mkdir -p /path/to/workspace/.agents/plugins/
-ln -s ~/repos/Antigravity-Asana-Plugin /path/to/workspace/.agents/plugins/asana
+cd ~/repos/Antigravity-Asana-Plugin
 
-# For Jetski:
-mkdir -p /path/to/workspace/_agents/plugins/
-ln -s ~/repos/Antigravity-Asana-Plugin /path/to/workspace/_agents/plugins/asana
+# Interactive setup:
+./install.sh
+
+# Or with CLI flags:
+./install.sh \
+  --workspace-gid 1213807836434812 \
+  --team-gid 1213807836434813 \
+  --strict true \
+  --target both
 ```
+
+### Method 2: Manual Installation
+1. Compile the server:
+   ```bash
+   npm install && npm run build
+   ```
+2. Symlink the repository to your environment:
+   ```bash
+   # Antigravity (Global):
+   mkdir -p ~/.gemini/antigravity/plugins/
+   ln -s ~/repos/Antigravity-Asana-Plugin ~/.gemini/antigravity/plugins/asana
+
+   # Jetski (Global):
+   mkdir -p ~/.gemini/config/plugins/
+   ln -s ~/repos/Antigravity-Asana-Plugin ~/.gemini/config/plugins/asana
+   ```
+3. Set your environment variables in your shell profile (`~/.bashrc` / `~/.zshrc`):
+   ```bash
+   export ASANA_ACCESS_TOKEN="your_token_here"
+   export ASANA_WORKSPACE_GID="1213807836434812"
+   export ASANA_TEAM_GID="1213807836434813"
+   export ASANA_STRICT_SCOPE="true"
+   ```
 
 ---
 
