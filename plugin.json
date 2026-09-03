@@ -1,7 +1,7 @@
 {
   "name": "antigravity-asana-plugin",
   "displayName": "Antigravity-Asana-Plugin",
-  "description": "Asana MCP server, task & project automation, and administration skills for Jetski & Antigravity workflows.",
+  "description": "Asana MCP server, task & project automation, and administration skills for Antigravity workflows.",
   "version": "1.0.0",
   "capabilities": {
     "rules": true,

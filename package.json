@@ -1,7 +1,7 @@
 {
   "name": "antigravity-asana-plugin",
   "version": "1.0.0",
-  "description": "Asana MCP Server and Plugin for Jetski & Antigravity",
+  "description": "Asana MCP Server and Plugin for Antigravity",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -10,7 +10,6 @@
     "test": "vitest run"
   },
   "keywords": [
-    "jetski",
     "antigravity",
     "mcp",
     "asana"

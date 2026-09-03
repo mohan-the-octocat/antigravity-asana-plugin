@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Antigravity-Asana-Plugin Installer
-# Installs and scopes the Asana plugin for Google Antigravity and Jetski.
+# Installs and scopes the Asana plugin for Google Antigravity.
 # ==============================================================================
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Default values
-TARGET="both"
+TARGET="antigravity"
 STRICT_SCOPE="true"
 WORKSPACE_GID="${ASANA_WORKSPACE_GID:-}"
 TEAM_GID="${ASANA_TEAM_GID:-}"
@@ -23,13 +23,11 @@ Options:
   -t, --team-gid GID        Required. Target Asana Team GID (e.g. 1213807836434813)
   -a, --access-token TOKEN  Optional. Asana Personal Access Token
   -s, --strict [true|false] Enforce strict workspace/team scope (default: true)
-  --target [antigravity|jetski|both]
-                            Installation target environment (default: both)
   -h, --help                Show this help message
 
 Examples:
   ./install.sh --workspace-gid 1213807836434812 --team-gid 1213807836434813
-  ./install.sh -w 1213807836434812 -t 1213807836434813 --target antigravity
+  ./install.sh -w 1213807836434812 -t 1213807836434813
 EOF
 }
 
@@ -129,13 +127,7 @@ install_to() {
   echo "✓ Installed to ${env_name}: ${dir}/asana"
 }
 
-if [[ "${TARGET}" == "antigravity" || "${TARGET}" == "both" ]]; then
-  install_to "${HOME}/.gemini/antigravity/plugins" "Antigravity"
-fi
-
-if [[ "${TARGET}" == "jetski" || "${TARGET}" == "both" ]]; then
-  install_to "${HOME}/.gemini/config/plugins" "Jetski"
-fi
+install_to "${HOME}/.gemini/antigravity/plugins" "Antigravity"
 
 echo ""
 echo "============================================================"

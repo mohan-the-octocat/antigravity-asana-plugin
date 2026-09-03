@@ -1,6 +1,6 @@
 # Antigravity Asana Plugin (`Antigravity-Asana-Plugin`)
 
-A native agent plugin for **Google Antigravity** and **Jetski** that connects Asana workspaces, projects, tasks, custom fields, and templates directly into agent workflows.
+A native agent plugin for **Google Antigravity** that connects Asana workspaces, projects, tasks, custom fields, and templates directly into agent workflows.
 
 ---
 
@@ -10,7 +10,7 @@ This plugin packages an Asana Model Context Protocol (MCP) server, model context
 
 ```
 Antigravity-Asana-Plugin/
-├── plugin.json                 # Jetski & Antigravity plugin manifest
+├── plugin.json                 # Antigravity plugin manifest
 ├── mcp_config.json             # MCP server declaration (stdio transport)
 ├── package.json                # Dependencies and build scripts
 ├── tsconfig.json               # TypeScript configuration
@@ -87,7 +87,7 @@ This plugin is designed to operate within a specific **Asana Workspace** and **T
 ## Installation & Setup
 
 ### Method 1: Automated Scoped Installer (Recommended)
-Use the included `install.sh` script to configure your pinned workspace and team, build the project, and symlink it to Antigravity and/or Jetski:
+Use the included `install.sh` script to configure your pinned workspace and team, build the project, and symlink it to Antigravity:
 
 ```bash
 cd ~/repos/Antigravity-Asana-Plugin
@@ -99,8 +99,7 @@ cd ~/repos/Antigravity-Asana-Plugin
 ./install.sh \
   --workspace-gid 1213807836434812 \
   --team-gid 1213807836434813 \
-  --strict true \
-  --target both
+  --strict true
 ```
 
 ### Method 2: Manual Installation
@@ -108,23 +107,12 @@ cd ~/repos/Antigravity-Asana-Plugin
    ```bash
    npm install && npm run build
    ```
-2. Symlink the repository to your environment:
+2. Symlink the repository to Antigravity:
    ```bash
-   # Antigravity (Global):
    mkdir -p ~/.gemini/antigravity/plugins/
    ln -s ~/repos/Antigravity-Asana-Plugin ~/.gemini/antigravity/plugins/asana
-
-   # Jetski (Global):
-   mkdir -p ~/.gemini/config/plugins/
-   ln -s ~/repos/Antigravity-Asana-Plugin ~/.gemini/config/plugins/asana
    ```
-3. Set your environment variables in your shell profile (`~/.bashrc` / `~/.zshrc`):
-   ```bash
-   export ASANA_ACCESS_TOKEN="your_token_here"
-   export ASANA_WORKSPACE_GID="1213807836434812"
-   export ASANA_TEAM_GID="1213807836434813"
-   export ASANA_STRICT_SCOPE="true"
-   ```
+3. Set your environment variables in your local `.env` file (see `.env.example`).
 
 ---
 
