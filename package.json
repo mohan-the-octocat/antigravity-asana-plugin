@@ -1,5 +1,5 @@
 {
-  "name": "asana-jetski-plugin",
+  "name": "antigravity-asana-plugin",
   "version": "1.0.0",
   "description": "Asana MCP Server and Plugin for Jetski & Antigravity",
   "main": "dist/index.js",

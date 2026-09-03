@@ -1,6 +1,6 @@
-# Asana Plugin for Jetski & Google Antigravity
+# Antigravity Asana Plugin (`Antigravity-Asana-Plugin`)
 
-A native agent plugin for **Jetski** and **Google Antigravity** that integrates Asana workspaces, projects, tasks, custom fields, and templates into agent workflows.
+A native agent plugin for **Google Antigravity** and **Jetski** that connects Asana workspaces, projects, tasks, custom fields, and templates directly into agent workflows.
 
 ---
 
@@ -9,7 +9,7 @@ A native agent plugin for **Jetski** and **Google Antigravity** that integrates 
 This plugin packages an Asana Model Context Protocol (MCP) server, model context rules, and developer skills into a single, cohesive bundle:
 
 ```
-asana-plugin/
+Antigravity-Asana-Plugin/
 ├── plugin.json                 # Jetski & Antigravity plugin manifest
 ├── mcp_config.json             # MCP server declaration (stdio transport)
 ├── package.json                # Dependencies and build scripts
@@ -21,6 +21,8 @@ asana-plugin/
 ├── rules/
 │   └── asana.md                # Progressive-disclosure rules (trigger: model_decision)
 ├── skills/
+│   ├── asana/
+│   │   └── SKILL.md            # Daily task & project orchestration skill (/asana)
 │   ├── asana-admin/
 │   │   └── SKILL.md            # Maintenance and tool extension skill (/asana-admin)
 │   └── asana-gap-analysis/
@@ -60,8 +62,10 @@ The MCP server exposes 18 generic, un-scoped Asana tools:
 
 ## Skills & Slash Commands
 
+- **`/asana` (`skills/asana/SKILL.md`)**:
+  Day-to-day Asana assistant: searches projects/tasks, creates action items, updates statuses, and resolves human names to GIDs automatically.
 - **`/asana-admin` (`skills/asana-admin/SKILL.md`)**:
-  Guides the agent to audit, implement, test, and verify new Asana API endpoints in `src/index.ts`.
+  Admin/developer skill: audits, implements, tests, and verifies new Asana API endpoints in `src/index.ts`.
 - **`/asana-gap-analysis` (`skills/asana-gap-analysis/SKILL.md`)**:
   Performs an automated gap analysis comparing implemented tools against Asana API endpoints and CE requirements.
 
@@ -85,25 +89,30 @@ The MCP server requires an **Asana Personal Access Token**:
 
 ## Installation
 
-### Option 1: Global Installation (Jetski & Antigravity)
-Symlink or copy this repository into your global agent plugins directory:
+### Option 1: Global Installation (Antigravity & Jetski)
+Symlink this repository into your global agent plugins directory:
 
 ```bash
-# For Jetski:
-mkdir -p ~/.gemini/config/plugins/
-ln -s ~/repos/asana-plugin ~/.gemini/config/plugins/asana
-
 # For Antigravity:
 mkdir -p ~/.gemini/antigravity/plugins/
-ln -s ~/repos/asana-plugin ~/.gemini/antigravity/plugins/asana
+ln -s ~/repos/Antigravity-Asana-Plugin ~/.gemini/antigravity/plugins/asana
+
+# For Jetski:
+mkdir -p ~/.gemini/config/plugins/
+ln -s ~/repos/Antigravity-Asana-Plugin ~/.gemini/config/plugins/asana
 ```
 
 ### Option 2: Workspace-Level Installation
-Symlink or copy into your workspace's `_agents/plugins/` (Jetski) or `.agents/plugins/` (Antigravity):
+Symlink into your workspace's `.agents/plugins/` (Antigravity) or `_agents/plugins/` (Jetski):
 
 ```bash
+# For Antigravity:
+mkdir -p /path/to/workspace/.agents/plugins/
+ln -s ~/repos/Antigravity-Asana-Plugin /path/to/workspace/.agents/plugins/asana
+
+# For Jetski:
 mkdir -p /path/to/workspace/_agents/plugins/
-ln -s ~/repos/asana-plugin /path/to/workspace/_agents/plugins/asana
+ln -s ~/repos/Antigravity-Asana-Plugin /path/to/workspace/_agents/plugins/asana
 ```
 
 ---
