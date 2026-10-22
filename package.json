@@ -17,7 +17,7 @@
   "author": "Mohan Sridharan",
   "license": "Apache-2.0",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "asana": "^3.1.11"
   },
   "devDependencies": {
